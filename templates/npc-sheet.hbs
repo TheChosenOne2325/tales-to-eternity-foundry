@@ -1,0 +1,372 @@
+<div class="tte-root tte-npc-root {{#if dead}}is-dead{{/if}}">
+
+  {{!-- Header: name, Level, Role and Power points --}}
+  <header class="tte-header">
+    <img class="tte-portrait" src="{{actor.img}}" alt="{{actor.name}}" data-action="tteEditImage"
+         {{#if editable}}data-tooltip="{{localize 'TTE.Edit'}}"{{/if}}>
+    <div class="tte-identity">
+      <div class="tte-identity-top">
+        <input class="tte-name" type="text" name="name" value="{{actor.name}}" placeholder="{{localize 'Name'}}"
+               {{#unless editable}}disabled{{/unless}}>
+        {{#if editable}}
+        <div class="tte-header-tools">
+          <button type="button" class="tte-tool tte-tool-edit {{#if editMode}}active{{/if}}" data-action="toggleEditMode"
+                  data-tooltip="{{#if editMode}}{{localize 'TTE.EditMode.Off'}}{{else}}{{localize 'TTE.EditMode.On'}}{{/if}}">
+            <i class="fa-solid {{#if editMode}}fa-lock-open{{else}}fa-pen{{/if}}"></i>
+          </button>
+        </div>
+        {{/if}}
+      </div>
+      <div class="tte-npc-line">
+        {{#if editMode}}
+        <select name="system.monster.type">{{selectOptions typeOptions selected=monster.type localize=true}}</select>
+        <select name="system.size">{{selectOptions sizeOptions selected=system.size localize=true}}</select>
+        {{else}}
+        <span class="tte-npc-kind">{{typeLabel}} · {{sizeLabel}}</span>
+        {{/if}}
+      </div>
+      <div class="tte-npc-scale">
+        <label class="tte-badge tte-badge-level">
+          <span>{{localize "TTE.Level"}}</span>
+          <select name="system.details.level" data-dtype="Number" {{#unless editable}}disabled{{/unless}}>
+            {{#each levels}}<option value="{{n}}" {{#if selected}}selected{{/if}}>{{n}}</option>{{/each}}
+          </select>
+        </label>
+        <label class="tte-badge tte-badge-role">
+          <span>{{localize "TTE.Role.Label"}}</span>
+          <select name="system.monster.role" {{#unless editable}}disabled{{/unless}}>
+            {{selectOptions roleOptions selected=monster.role localize=true}}
+          </select>
+        </label>
+        {{#if isBoss}}
+        <label class="tte-badge tte-badge-role" data-tooltip="{{localize 'TTE.Monster.CharactersHint'}}">
+          <span>{{localize "TTE.Monster.Characters"}}</span>
+          <select name="system.monster.characters" data-dtype="Number" {{#unless editable}}disabled{{/unless}}>
+            {{selectOptions characterOptions selected=monster.characters}}
+          </select>
+        </label>
+        {{/if}}
+        <div class="tte-badge tte-badge-tier"><span>{{localize "TTE.Tier"}}</span><strong>{{tier}}</strong></div>
+        <div class="tte-badge tte-badge-points" data-tooltip="{{pointsHint}}">
+          <span>{{localize "TTE.Monster.Points"}}</span><strong>{{points}}</strong>
+        </div>
+        {{#if suggested}}
+        <button type="button" class="tte-chip" data-action="monsterSuggested" data-tooltip="{{localize 'TTE.Monster.SuggestedHint'}}">
+          <i class="fa-solid fa-rotate-left"></i> {{suggested}}
+        </button>
+        {{/if}}
+      </div>
+    </div>
+  </header>
+
+  {{!-- Vitals --}}
+  <div class="tte-vitals tte-npc-vitals">
+    <div class="tte-vital tte-life {{#if life.low}}is-low{{/if}}">
+      <div class="tte-vital-line">
+        <span class="tte-mini-label"><i class="fa-solid fa-heart"></i> {{localize "TTE.Life"}}</span>
+        <span class="tte-vital-values">
+          <input class="tte-life-value" type="number" name="system.life.value" value="{{life.value}}" min="0"
+                 max="{{life.max}}" {{#unless editable}}disabled{{/unless}}>
+          <span>/ {{life.max}}</span>
+        </span>
+        {{#if editMode}}
+        <select class="tte-life-category" name="system.life.category" data-tooltip="{{localize 'TTE.LifeCategoryLabel'}}">
+          {{selectOptions lifeCategoryOptions selected=system.life.category localize=true}}
+        </select>
+        {{/if}}
+      </div>
+      <div class="tte-bar tte-bar-life"><div style="width: {{life.pct}}%"></div></div>
+    </div>
+
+    <div class="tte-vital tte-stat" data-tooltip="{{localize 'TTE.Monster.DefenseHint'}}">
+      <span class="tte-mini-label"><i class="fa-solid fa-shield-halved"></i> {{localize "TTE.Defense"}}</span>
+      <div class="tte-stat-line">
+        <strong>{{defense}}</strong>
+        {{#if editMode}}<span class="tte-stat-note">T1</span><input type="number" name="system.monster.defense" value="{{monster.defense}}" min="0">{{/if}}
+      </div>
+    </div>
+
+    <div class="tte-vital tte-stat" data-tooltip="{{localize 'TTE.SpeedHint'}}">
+      <span class="tte-mini-label"><i class="fa-solid fa-person-running"></i> {{localize "TTE.Speed"}}</span>
+      <div class="tte-stat-line">
+        {{#if editMode}}
+        <input type="number" name="system.speed" value="{{system.speed}}" min="0">
+        {{else}}
+        <strong class="{{#if speedReduced}}is-reduced{{/if}}">{{movement}}</strong>
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="tte-vital tte-stat" data-tooltip="{{localize 'TTE.Monster.DifficultyHint'}}">
+      <span class="tte-mini-label"><i class="fa-solid fa-bullseye"></i> {{localize "TTE.Monster.Difficulty"}}</span>
+      <div class="tte-stat-line"><strong class="tte-npc-small">10 + {{localize "TTE.Monster.AttributeShort"}}</strong></div>
+    </div>
+  </div>
+
+  {{!-- Tabs --}}
+  <nav class="tte-tabs">
+    {{#each tabs}}
+    <button type="button" class="tte-tab-button {{#if active}}active{{/if}}" data-action="tteTab" data-tab="{{id}}">
+      <i class="fa-solid {{icon}}"></i> {{label}}
+    </button>
+    {{/each}}
+  </nav>
+
+  <div class="tte-body">
+
+    {{!-- Monster tab --}}
+    <section class="tte-tab {{#if (eq activeTab 'main')}}active{{/if}}" data-tab="main">
+
+      <div class="tte-attributes">
+        {{#each monsterAttributes}}
+        <div class="tte-attribute" data-key="{{key}}">
+          {{#if ../editMode}}
+          <label class="tte-attribute-edit tte-npc-attribute-edit" data-tooltip="{{label}}: {{localize 'TTE.Monster.AttributeT1'}}">
+            <span class="tte-attribute-abbr">{{abbr}}</span>
+            <input type="number" name="system.monster.attributes.{{key}}.value" value="{{base}}" min="-5" max="5">
+            <span class="tte-npc-scale-check" data-tooltip="{{localize 'TTE.Monster.ScaleHint'}}">
+              <input type="checkbox" name="system.monster.attributes.{{key}}.scale" {{checked scale}}> {{localize "TTE.Monster.Scale"}}
+            </span>
+          </label>
+          {{else}}
+          <button type="button" class="tte-attribute-roll" data-action="rollAttribute" data-key="{{key}}"
+                  data-tooltip="{{label}} ({{localize 'TTE.Roll.QuickHint'}})">
+            <span class="tte-attribute-abbr">{{abbr}}</span>
+            <span class="tte-attribute-mod">{{signed}}</span>
+          </button>
+          {{/if}}
+        </div>
+        {{/each}}
+      </div>
+
+      {{!-- Concept lines --}}
+      {{#if editMode}}
+      <section class="tte-panel tte-npc-concept">
+        <h3 class="tte-panel-title"><i class="fa-solid fa-scroll"></i> {{localize "TTE.Monster.Concept"}}</h3>
+        <div class="tte-npc-skill-edit">
+          {{#each skillRanks}}
+          <label><span>{{label}}</span><input type="number" name="system.skills.{{key}}.rank" value="{{rank}}" min="0" max="3"></label>
+          {{/each}}
+        </div>
+        <div class="tte-npc-fields">
+          {{#each senses}}
+          <label><span>{{label}}</span><input type="number" name="system.senses.{{key}}" value="{{value}}" min="0"></label>
+          {{/each}}
+          <label class="wide"><span>{{localize "TTE.Languages"}}</span>
+            <input type="text" name="system.languages.custom" value="{{system.languages.custom}}"></label>
+          <label><span>{{localize "TTE.Monster.Conjuring"}}</span>
+            <select name="system.monster.conjuring">{{selectOptions conjuringOptions selected=monster.conjuring localize=true}}</select></label>
+        </div>
+        <p class="tte-mini-label">{{localize "TTE.Monster.ConditionImmunities"}}</p>
+        <div class="tte-chips">
+          {{#each immunities}}
+          <button type="button" class="tte-chip {{#if active}}active{{/if}}" data-action="toggleImmunity" data-condition="{{id}}">{{label}}</button>
+          {{/each}}
+        </div>
+        <p class="tte-hint">{{localize "TTE.Monster.AffinityEditHint"}}</p>
+      </section>
+      {{else}}
+      <section class="tte-panel tte-npc-concept">
+        <dl class="tte-npc-lines">
+          {{#if trainedSkills.length}}
+          <dt>{{localize "TTE.Skills"}}</dt>
+          <dd>{{#each trainedSkills}}<a class="tte-npc-skill" data-action="rollSkill" data-key="{{key}}">{{label}} {{signed}}</a>{{#unless @last}}, {{/unless}}{{/each}}</dd>
+          {{/if}}
+          <dt>{{localize "TTE.PassivePerception"}}</dt><dd>{{passivePerception}}{{#if senseText}} · {{senseText}}{{/if}}</dd>
+          {{#if languageList}}<dt>{{localize "TTE.Languages"}}</dt><dd>{{languageList}}</dd>{{/if}}
+          {{#if affinityText}}<dt>{{localize "TTE.Affinity.Title"}}</dt><dd>{{affinityText}}</dd>{{/if}}
+          {{#if immunityText}}<dt>{{localize "TTE.Monster.ConditionImmunities"}}</dt><dd>{{immunityText}}</dd>{{/if}}
+          {{#if monster.conjuring}}<dt>{{localize "TTE.Spell.DC"}}</dt><dd>{{spellDC}}</dd>{{/if}}
+        </dl>
+      </section>
+      {{/if}}
+
+      {{!-- Traits, Actions, Reactions, Boss Actions --}}
+      {{#each abilitySections}}
+      <section class="tte-panel tte-npc-section {{#if collapsed}}is-collapsed{{/if}}" data-section-key="{{key}}">
+        <h3 class="tte-panel-title" data-action="toggleSection">
+          {{label}}
+          {{#if @root.editable}}
+          <a class="tte-feature-add" data-action="itemCreate" data-type="feature" data-feature-type="{{type}}"
+             data-tooltip="{{localize 'TTE.Create'}}"><i class="fa-solid fa-plus"></i></a>
+          {{/if}}
+          <i class="fa-solid fa-chevron-down tte-collapse-icon"></i>
+        </h3>
+        {{#if entries.length}}
+        <ol class="tte-npc-abilities">
+          {{#each entries}}
+          <li class="tte-npc-ability" data-item-id="{{item.id}}">
+            <div class="tte-npc-ability-head">
+              <img src="{{item.img}}" alt="" data-action="itemEdit">
+              {{#if attack}}
+              <a class="tte-npc-ability-name" data-action="itemUse" data-tooltip="{{localize 'TTE.Attack.Title'}}">
+                <i class="fa-solid fa-dice-d20"></i> {{item.name}}</a>
+              <span class="tte-npc-roll">{{summary}}</span>
+              {{else}}
+              {{#if usable}}
+              <a class="tte-npc-ability-name" data-action="abilityUse" data-tooltip="{{localize 'TTE.Card.Use'}}">
+                <i class="fa-solid fa-bolt"></i> {{item.name}}</a>
+              {{else}}
+              <a class="tte-npc-ability-name" data-action="itemChat" data-tooltip="{{localize 'TTE.PostToChat'}}">{{item.name}}</a>
+              {{/if}}
+              {{#if added}}<span class="tte-npc-added" data-tooltip="{{localize 'TTE.Monster.AddedHint'}}">+10%</span>{{/if}}
+              {{/if}}
+              {{#if uses}}
+              <span class="tte-uses">
+                <a data-action="featureRestore" data-tooltip="{{localize 'TTE.Uses.Restore'}}"><i class="fa-solid fa-rotate-left"></i></a>
+                <strong>{{uses.value}}/{{uses.max}}</strong> <span>{{uses.per}}</span>
+                <a data-action="featureSpend" data-tooltip="{{localize 'TTE.Uses.Use'}}"><i class="fa-solid fa-bolt"></i></a>
+              </span>
+              {{/if}}
+              <div class="tte-item-controls">
+                <a data-action="itemChat" data-tooltip="{{localize 'TTE.PostToChat'}}"><i class="fa-solid fa-comment"></i></a>
+                {{#if @root.editable}}
+                <a data-action="itemEdit" data-tooltip="{{localize 'TTE.Edit'}}"><i class="fa-solid fa-pen"></i></a>
+                <a data-action="itemDelete" data-tooltip="{{localize 'TTE.Delete'}}"><i class="fa-solid fa-trash"></i></a>
+                {{/if}}
+              </div>
+            </div>
+            {{#if text}}<div class="tte-npc-ability-text">{{{text}}}</div>{{/if}}
+          </li>
+          {{/each}}
+        </ol>
+        {{else}}
+        <p class="tte-empty">{{localize "TTE.Monster.EmptySection"}}</p>
+        {{/if}}
+      </section>
+      {{/each}}
+
+      {{#if monsterSpells.length}}
+      <section class="tte-panel tte-npc-section">
+        <h3 class="tte-panel-title"><i class="fa-solid fa-wand-sparkles"></i> {{localize "TTE.Tab.spells"}}
+          <span class="tte-panel-note">{{localize "TTE.Spell.DC"}} {{spellDC}}</span></h3>
+        <ol class="tte-item-list">
+          {{#each monsterSpells}}
+          <li class="tte-item-row" data-item-id="{{id}}">
+            <img src="{{img}}" alt="" data-action="itemEdit">
+            <a class="tte-item-name" data-action="itemUse"><i class="fa-solid fa-wand-sparkles"></i> {{name}}</a>
+            <div class="tte-item-controls">
+              <a data-action="itemChat" data-tooltip="{{localize 'TTE.PostToChat'}}"><i class="fa-solid fa-comment"></i></a>
+              {{#if @root.editable}}<a data-action="itemDelete" data-tooltip="{{localize 'TTE.Delete'}}"><i class="fa-solid fa-trash"></i></a>{{/if}}
+            </div>
+          </li>
+          {{/each}}
+        </ol>
+      </section>
+      {{/if}}
+
+      {{#if gear.length}}
+      <section class="tte-panel tte-npc-section">
+        <h3 class="tte-panel-title"><i class="fa-solid fa-box-open"></i> {{localize "TTE.Monster.Gear"}}</h3>
+        <ol class="tte-item-list">
+          {{#each gear}}
+          <li class="tte-item-row" data-item-id="{{id}}">
+            <img src="{{img}}" alt="" data-action="itemEdit">
+            <a class="tte-item-name" data-action="itemEdit">{{name}}</a>
+            <div class="tte-item-controls">
+              {{#if @root.editable}}<a data-action="itemDelete" data-tooltip="{{localize 'TTE.Delete'}}"><i class="fa-solid fa-trash"></i></a>{{/if}}
+            </div>
+          </li>
+          {{/each}}
+        </ol>
+      </section>
+      {{/if}}
+    </section>
+
+    {{!-- Effects tab: conditions and affinities --}}
+    <section class="tte-tab {{#if (eq activeTab 'effects')}}active{{/if}}" data-tab="effects">
+      <section class="tte-band {{#if (lookup @root.collapsed 'eff-passive')}}is-collapsed{{/if}}" data-section-key="eff-passive">
+        <h3 class="tte-band-title" data-action="toggleSection">
+          {{localize "TTE.Effects.Passive"}}
+          {{#if editable}}
+          <button type="button" class="tte-band-button" data-action="effectCreate" data-tooltip="{{localize 'TTE.Effects.New'}}">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+          {{/if}}
+        <i class="fa-solid fa-chevron-down tte-collapse-icon"></i></h3>
+        {{#if passiveEffects.length}}
+        <ol class="tte-effect-list">
+          {{#each passiveEffects}}
+          <li class="tte-effect {{#if disabled}}is-disabled{{/if}}" data-effect-uuid="{{uuid}}">
+            <img src="{{img}}" alt="" data-action="effectEdit">
+            <a class="tte-effect-name" data-action="effectEdit">{{name}}</a>
+            <span class="tte-item-meta">{{source}}</span>
+            <span class="tte-item-meta">{{#if duration}}{{duration}}{{else}}—{{/if}}</span>
+            <button type="button" class="tte-switch {{#unless disabled}}on{{/unless}}" data-action="effectToggle"
+                    data-tooltip="{{localize 'TTE.Effects.Toggle'}}" {{#unless ../editable}}disabled{{/unless}}></button>
+            <div class="tte-item-controls">
+              <a data-action="effectEdit" data-tooltip="{{localize 'TTE.Edit'}}"><i class="fa-solid fa-pen"></i></a>
+              {{#if ../editable}}
+              <a data-action="effectDelete" data-tooltip="{{localize 'TTE.Delete'}}"><i class="fa-solid fa-trash"></i></a>
+              {{/if}}
+            </div>
+          </li>
+          {{/each}}
+        </ol>
+        {{else}}
+        <p class="tte-empty">{{localize "TTE.Effects.Empty"}}</p>
+        {{/if}}
+      </section>
+
+      <section class="tte-band {{#if (lookup @root.collapsed 'eff-conditions')}}is-collapsed{{/if}}" data-section-key="eff-conditions">
+        <h3 class="tte-band-title" data-action="toggleSection">{{localize "TTE.Effects.Conditions"}} <i class="fa-solid fa-chevron-down tte-collapse-icon"></i></h3>
+        <ol class="tte-condition-grid">
+          {{#each conditions}}
+          <li class="tte-condition {{#if active}}active{{/if}} {{#if implied}}implied{{/if}}" data-condition="{{id}}"
+              data-tooltip="{{hint}}">
+            <img src="{{img}}" alt="">
+            <span class="tte-condition-name">{{label}}</span>
+            {{#if levels}}
+            <div class="tte-counter">
+              <button type="button" data-action="changeDeprived" data-delta="-1" {{#unless ../editable}}disabled{{/unless}}><i class="fa-solid fa-minus"></i></button>
+              <strong>{{levels.value}}</strong>
+              <button type="button" data-action="changeDeprived" data-delta="1" {{#unless ../editable}}disabled{{/unless}}><i class="fa-solid fa-plus"></i></button>
+            </div>
+            {{else if automatic}}
+            <span class="tte-auto" data-tooltip="{{localize 'TTE.Effects.Auto'}}"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+            {{else}}
+            {{#if tier}}{{#if active}}
+            <select class="tte-condition-tier" name="{{tier.name}}" data-tooltip="{{localize 'TTE.Effects.Tier'}}"
+                    {{#unless ../editable}}disabled{{/unless}}>
+              <option value="1" {{#if (eq tier.value 1)}}selected{{/if}}>T1</option>
+              <option value="2" {{#if (eq tier.value 2)}}selected{{/if}}>T2</option>
+              <option value="3" {{#if (eq tier.value 3)}}selected{{/if}}>T3</option>
+              <option value="4" {{#if (eq tier.value 4)}}selected{{/if}}>T4</option>
+            </select>
+            {{/if}}{{/if}}
+            <button type="button" class="tte-switch {{#if active}}on{{/if}} {{#if implied}}implied{{/if}}" data-action="toggleCondition"
+                    {{#unless ../editable}}disabled{{/unless}}></button>
+            {{/if}}
+          </li>
+          {{/each}}
+        </ol>
+      </section>
+
+      <section class="tte-band {{#if (lookup @root.collapsed 'eff-affinities')}}is-collapsed{{/if}}" data-section-key="eff-affinities">
+        <h3 class="tte-band-title" data-action="toggleSection">{{localize "TTE.Affinity.Title"}} <i class="fa-solid fa-chevron-down tte-collapse-icon"></i></h3>
+        <ol class="tte-affinity-grid">
+          {{#each affinities}}
+          <li class="tte-affinity {{#if active}}active{{/if}} tte-affinity-{{value}}" data-tooltip="{{hint}}">
+            <span>{{label}}</span>
+            <select name="system.affinities.{{key}}" {{#unless ../editable}}disabled{{/unless}}>
+              {{selectOptions ../affinityOptions selected=value localize=true}}
+            </select>
+          </li>
+          {{/each}}
+        </ol>
+      </section>
+    </section>
+
+    {{!-- Notes --}}
+    <section class="tte-tab {{#if (eq activeTab 'biography')}}active{{/if}}" data-tab="biography">
+      <section class="tte-panel tte-editor-panel">
+        <h3 class="tte-panel-title"><i class="fa-solid fa-feather"></i> {{localize "TTE.Description"}}</h3>
+        {{#if editable}}
+        <prose-mirror name="system.biography" value="{{source.biography}}" document-uuid="{{actor.uuid}}"></prose-mirror>
+        {{else}}
+        <div class="editor"><div class="editor-content">{{{enrichedBiography}}}</div></div>
+        {{/if}}
+      </section>
+    </section>
+  </div>
+</div>

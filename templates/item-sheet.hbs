@@ -1,0 +1,612 @@
+<div class="tte-root">
+  <header class="tte-header tte-item-header">
+    <img class="tte-portrait tte-item-portrait" src="{{item.img}}" alt="{{item.name}}" data-action="tteEditImage"
+         {{#if editable}}data-tooltip="{{localize 'TTE.Edit'}}"{{/if}}>
+    <div class="tte-identity">
+      <input class="tte-name" type="text" name="name" value="{{item.name}}" placeholder="{{localize 'Name'}}"
+             {{#unless editable}}disabled{{/unless}}>
+      <div class="tte-identity-row">
+        <span class="tte-badge">{{typeLabel}}</span>
+        {{#if isFeature}}{{#if (eq editMode hasEditMode)}}
+        <label class="tte-field">
+          <span>{{localize "TTE.Feature.Type"}}</span>
+          <select name="system.featureType" {{#unless editable}}disabled{{/unless}}>
+            {{selectOptions featureTypeOptions selected=system.featureType localize=true}}
+          </select>
+        </label>
+        <label class="tte-field tte-field-small">
+          <span>{{localize "TTE.Level"}}</span>
+          <select name="system.level" data-dtype="Number" {{#unless editable}}disabled{{/unless}}>
+            {{#each levels}}<option value="{{n}}" {{#if selected}}selected{{/if}}>{{n}}</option>{{/each}}
+          </select>
+        </label>
+        {{else}}
+        <span class="tte-identity-text">{{featureInfo.typeLabel}} · {{localize "TTE.Level"}} {{system.level}}</span>
+        {{/if}}{{/if}}
+        {{#if isPhysical}}
+        <label class="tte-field tte-field-small">
+          <span>{{localize "TTE.Equipment.Quantity"}}</span>
+          <input type="number" name="system.quantity" value="{{system.quantity}}" min="0" {{#unless editable}}disabled{{/unless}}>
+        </label>
+        <label class="tte-field tte-field-small">
+          <span>{{localize "TTE.Equipment.Load"}}</span>
+          <input type="number" name="system.load" value="{{system.load}}" min="0" step="any" {{#unless editable}}disabled{{/unless}}>
+        </label>
+        <label class="tte-field tte-field-small">
+          <span>{{localize "TTE.Equipment.Value"}}</span>
+          <input type="number" name="system.value" value="{{system.value}}" min="0" step="any" {{#unless editable}}disabled{{/unless}}>
+        </label>
+        {{/if}}
+        <label class="tte-field tte-field-small">
+          <span>{{localize "TTE.Source"}}</span>
+          <input type="text" name="system.source" value="{{system.source}}" maxlength="3" list="tte-sources-{{item.id}}"
+                 {{#unless editable}}disabled{{/unless}}>
+          <datalist id="tte-sources-{{item.id}}">
+            {{#each sourceOptions}}<option value="{{@key}}">{{this}}</option>{{/each}}
+          </datalist>
+        </label>
+      </div>
+    </div>
+    <div class="tte-header-tools">
+      {{#if hasEditMode}}
+      <button type="button" class="tte-tool tte-tool-edit {{#if editMode}}active{{/if}}" data-action="toggleEditMode"
+              data-tooltip="{{#if editMode}}{{localize 'TTE.EditMode.Off'}}{{else}}{{localize 'TTE.EditMode.On'}}{{/if}}">
+        <i class="fa-solid {{#if editMode}}fa-lock-open{{else}}fa-pen{{/if}}"></i>
+      </button>
+      {{/if}}
+      <button type="button" class="tte-tool" data-action="itemChat" data-tooltip="{{localize 'TTE.PostToChat'}}">
+        <i class="fa-solid fa-comment"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="tte-body">
+    {{#if playInfo}}{{#unless editMode}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-circle-info"></i> {{localize "TTE.Item.Details"}}</h3>
+      <dl class="tte-summary-rows">
+        {{#each playInfo.rows}}<div><dt>{{label}}</dt><dd>{{value}}</dd></div>{{/each}}
+      </dl>
+      {{#if playInfo.chips.length}}
+      <div class="tte-chips">{{#each playInfo.chips}}<span class="tte-chip active">{{label}}</span>{{/each}}</div>
+      {{/if}}
+    </section>
+    {{/unless}}{{/if}}
+    {{#if isRace}}{{#if editMode}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-users"></i> {{localize "TTE.Item.Details"}}</h3>
+      <div class="tte-item-grid">
+        <label class="tte-field">
+          <span>{{localize "TTE.Size.Label"}}</span>
+          <select name="system.size" {{#unless editable}}disabled{{/unless}}>
+            {{selectOptions race.sizeOptions selected=system.size localize=true}}
+          </select>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Speed"}}</span>
+          <input type="number" name="system.speed" value="{{system.speed}}" min="0" {{#unless editable}}disabled{{/unless}}>
+        </label>
+        <label class="tte-field" data-tooltip="{{localize 'TTE.Race.LifeBonusHint'}}">
+          <span>{{localize "TTE.Race.LifeBonus"}}</span>
+          <input type="number" name="system.lifeBonus" value="{{system.lifeBonus}}" {{#unless editable}}disabled{{/unless}}>
+        </label>
+        {{#each race.senses}}
+        <label class="tte-field">
+          <span>{{label}}</span>
+          <input type="number" name="system.senses.{{key}}" value="{{value}}" min="0" {{#unless @root.editable}}disabled{{/unless}}>
+        </label>
+        {{/each}}
+        <label class="tte-field">
+          <span>{{localize "TTE.Race.Height"}}</span>
+          <input type="text" name="system.details.height" value="{{system.details.height}}" {{#unless editable}}disabled{{/unless}}>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Race.Weight"}}</span>
+          <input type="text" name="system.details.weight" value="{{system.details.weight}}" {{#unless editable}}disabled{{/unless}}>
+        </label>
+      </div>
+      <label class="tte-field tte-field-wide">
+        <span>{{localize "TTE.Race.Lifespan"}}</span>
+        <input type="text" name="system.details.lifespan" value="{{system.details.lifespan}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+      <div class="tte-prop-set">
+        <span class="tte-prop-set-label">{{localize "TTE.Languages"}}</span>
+        <div class="tte-chips">
+          {{#each race.languages}}
+          <button type="button" class="tte-chip {{#if active}}active{{/if}}" data-action="toggleSetValue" data-path="system.languages"
+                  data-value="{{key}}" data-tooltip="{{hint}}" {{#unless @root.editable}}disabled{{/unless}}>{{label}}</button>
+          {{/each}}
+        </div>
+      </div>
+    </section>
+    {{/if}}{{/if}}
+
+    {{#if isClass}}
+    {{#if editMode}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-shield-halved"></i> {{localize "TTE.Item.Details"}}</h3>
+      <div class="tte-item-grid">
+        <label class="tte-field">
+          <span>{{localize "TTE.LifeCategoryLabel"}}</span>
+          <select name="system.life">{{selectOptions lifeCategoryOptions selected=system.life localize=true}}</select>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Class.Skills"}}</span>
+          <input type="number" name="system.skills" value="{{system.skills}}" min="0">
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Mana"}}</span>
+          <select name="system.mana">{{selectOptions manaTypeOptions selected=system.mana localize=true}}</select>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Class.Conjuring"}}</span>
+          <select name="system.conjuring">{{selectOptions conjuringOptions selected=system.conjuring localize=true}}</select>
+        </label>
+        <label class="tte-field" data-tooltip="{{localize 'TTE.Class.ResourceHint'}}">
+          <span>{{localize "TTE.Resource"}}</span>
+          <input type="text" name="system.resource.label" value="{{system.resource.label}}" placeholder="Combo">
+        </label>
+        <label class="tte-field" data-tooltip="{{localize 'TTE.Uses.MaxHint'}}">
+          <span>{{localize "TTE.Class.ResourceMax"}}</span>
+          <input type="text" name="system.resource.max" value="{{system.resource.max}}" placeholder="3 > 4 > 5 > 6">
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Class.ResourceReset"}}</span>
+          <select name="system.resource.reset">{{selectOptions resourceResetOptions selected=system.resource.reset localize=true}}</select>
+        </label>
+        <label class="tte-field" data-tooltip="{{localize 'TTE.Class.WeaponChoicesHint'}}">
+          <span>{{localize "TTE.Class.WeaponChoicesLabel"}}</span>
+          <input type="number" name="system.weaponChoices" value="{{system.weaponChoices}}" min="0">
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Class.CurrencyLabel"}}</span>
+          <input type="text" name="system.currency" value="{{system.currency}}" placeholder="1d12 * 10">
+        </label>
+      </div>
+      <div class="tte-prop-grid">
+        <label class="tte-prop" data-tooltip="{{localize 'TTE.Class.NoConcentrationHint'}}">
+          <input type="checkbox" name="system.noConcentration" {{checked system.noConcentration}}>
+          <span>{{localize "TTE.Class.NoConcentration"}}</span>
+        </label>
+      </div>
+    </section>
+    {{else}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-shield-halved"></i> {{localize "TTE.Item.Details"}}</h3>
+      <dl class="tte-summary-rows">
+        {{#each classInfo.rows}}<div><dt>{{label}}</dt><dd>{{value}}</dd></div>{{/each}}
+      </dl>
+      {{#if classInfo.tags.length}}
+      <div class="tte-chips">{{#each classInfo.tags}}<span class="tte-chip active" data-tooltip="{{hint}}">{{label}}</span>{{/each}}</div>
+      {{/if}}
+    </section>
+    {{/if}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-box-open"></i> {{localize "TTE.Class.StartingEquipment"}}</h3>
+      <ul class="tte-entry-list">
+        {{#each classInfo.equipment.groups}}
+        {{#if given}}
+        {{#each entries}}
+        <li class="tte-entry" data-action="openEntry" data-uuid="{{uuid}}">
+          <img src="{{img}}" alt=""><span>{{name}}</span>{{#if showQuantity}}<em>×{{quantity}}</em>{{/if}}
+        </li>
+        {{/each}}
+        {{else}}
+        <li class="tte-entry-choice">
+          <span class="tte-entry-choice-title">{{localize "TTE.Class.ChooseOne"}}</span>
+          {{#each options}}
+          <div class="tte-entry-option">
+            <span class="tte-entry-option-n">{{n}}</span>
+            <div>
+              {{#each entries}}
+              <span class="tte-entry" data-action="openEntry" data-uuid="{{uuid}}"><img src="{{img}}" alt=""><span>{{name}}</span>{{#if showQuantity}}<em>×{{quantity}}</em>{{/if}}</span>
+              {{/each}}
+            </div>
+          </div>
+          {{/each}}
+        </li>
+        {{/if}}
+        {{/each}}
+        {{#if classInfo.equipment.weapons}}<li class="tte-entry is-text"><i class="fa-solid fa-khanda"></i><span>{{classInfo.equipment.weapons}}</span></li>{{/if}}
+        {{#if classInfo.equipment.currency}}<li class="tte-entry is-text"><i class="fa-solid fa-coins"></i><span>{{classInfo.equipment.currency}}</span></li>{{/if}}
+      </ul>
+      <p class="tte-hint">{{localize "TTE.Class.EquipmentHint"}}</p>
+    </section>
+    {{/if}}
+
+    {{#if isSpecialization}}{{#if editMode}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-code-branch"></i> {{localize "TTE.Item.Details"}}</h3>
+      <div class="tte-item-grid">
+        <label class="tte-field">
+          <span>{{localize "TTE.ClassLabel"}}</span>
+          <select data-custom-path="{{specClass.path}}">
+            {{#each specClass.options}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+          </select>
+        </label>
+        {{#if specClass.custom}}
+        <label class="tte-field">
+          <span>{{localize "TTE.Item.Custom"}}</span>
+          <input type="text" name="system.class" value="{{system.class}}">
+        </label>
+        {{/if}}
+      </div>
+    </section>
+    {{/if}}{{/if}}
+
+    {{#if granted}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title">
+        <i class="fa-solid fa-star"></i> {{granted.title}}
+        {{#if grantEditable}}
+        <button type="button" class="tte-button tte-button-add" data-action="featureAdd">
+          <i class="fa-solid fa-plus"></i> {{localize "TTE.Create"}}
+        </button>
+        {{/if}}
+      </h3>
+      <p class="tte-hint">{{granted.hint}}</p>
+      {{#unless grantForm}}
+      {{#each granted.features}}
+      <details class="tte-granted-row">
+        <summary>
+          {{#if ../granted.showLevel}}<span class="tte-granted-level">{{localize "TTE.LevelShort"}} {{level}}</span>{{/if}}
+          <strong>{{name}}</strong>
+          {{#if usesLabel}}<span class="tte-granted-uses">{{usesLabel}}</span>{{/if}}
+        </summary>
+        <div class="editor"><div class="editor-content">{{{description}}}</div></div>
+      </details>
+      {{/each}}
+      {{/unless}}
+      {{#each granted.features}}{{#if @root.grantForm}}
+      <div class="tte-race-feature">
+        <div class="tte-race-feature-head">
+          {{#if ../granted.showLevel}}
+          <label class="tte-inline-field" data-tooltip="{{localize 'TTE.Level'}}">
+            <span>{{localize "TTE.LevelShort"}}</span>
+            <input type="number" name="system.features.{{index}}.level" value="{{level}}" min="1" max="12" {{#unless @root.grantEditable}}disabled{{/unless}}>
+          </label>
+          {{/if}}
+          <input type="text" name="system.features.{{index}}.name" value="{{name}}" {{#unless @root.grantEditable}}disabled{{/unless}}>
+          {{#if ../granted.showLevel}}
+          <label class="tte-inline-field" data-tooltip="{{localize 'TTE.Uses.MaxHint'}}">
+            <span>{{localize "TTE.Uses.Label"}}</span>
+            <input type="text" class="tte-uses-max" name="system.features.{{index}}.uses.max" value="{{uses.max}}" placeholder="" {{#unless @root.grantEditable}}disabled{{/unless}}>
+          </label>
+          <select name="system.features.{{index}}.uses.per" data-tooltip="{{localize 'TTE.Uses.PerLabel'}}" {{#unless @root.grantEditable}}disabled{{/unless}}>
+            {{selectOptions @root.usePeriodOptions selected=uses.per localize=true}}
+          </select>
+          {{/if}}
+          {{#if @root.grantEditable}}
+          <a data-action="featureRemove" data-index="{{index}}" data-tooltip="{{localize 'TTE.Delete'}}"><i class="fa-solid fa-trash"></i></a>
+          {{/if}}
+        </div>
+        {{#if @root.grantEditable}}
+        <prose-mirror name="system.features.{{index}}.description" value="{{description}}" document-uuid="{{@root.item.uuid}}" toggled></prose-mirror>
+        {{else}}
+        <div class="editor"><div class="editor-content">{{{description}}}</div></div>
+        {{/if}}
+      </div>
+      {{/if}}{{/each}}
+    </section>
+    {{/if}}
+
+    {{#if isFeature}}
+    {{#if editMode}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-bolt"></i> {{localize "TTE.Uses.Title"}}</h3>
+      <div class="tte-item-grid">
+        <label class="tte-field" data-tooltip="{{localize 'TTE.Uses.MaxHint'}}">
+          <span>{{localize "TTE.Uses.Label"}}</span>
+          <input type="text" name="system.uses.max" value="{{system.uses.max}}" placeholder="1 > 2 > 3 > 4">
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Uses.PerLabel"}}</span>
+          <select name="system.uses.per">
+            {{selectOptions usePeriodOptions selected=system.uses.per localize=true}}
+          </select>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Uses.Spent"}}</span>
+          <input type="number" name="system.uses.spent" value="{{system.uses.spent}}" min="0">
+        </label>
+        {{#if featureValueDefault}}
+        <label class="tte-field" data-tooltip="{{localize 'TTE.Feature.ValueHint'}}">
+          <span>{{localize "TTE.Feature.Value"}}</span>
+          <input type="text" name="system.value" value="{{system.value}}" placeholder="{{featureValueDefault}}">
+        </label>
+        {{/if}}
+      </div>
+    </section>
+    {{else}}{{#if featureInfo.show}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-bolt"></i> {{localize "TTE.Uses.Title"}}</h3>
+      <dl class="tte-summary-rows">
+        {{#if featureInfo.uses}}<div><dt>{{localize "TTE.Uses.Label"}}</dt><dd>{{featureInfo.uses}}</dd></div>{{/if}}
+        {{#if featureValueDefault}}<div data-tooltip="{{localize 'TTE.Feature.ValueHint'}}"><dt>{{localize "TTE.Feature.Value"}}</dt><dd>{{featureInfo.value}}</dd></div>{{/if}}
+      </dl>
+    </section>
+    {{/if}}{{/if}}
+    {{/if}}
+
+    {{#if isSpell}}{{#if editMode}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-wand-sparkles"></i> {{localize "TTE.Item.Details"}}</h3>
+      <div class="tte-item-grid">
+        <label class="tte-field">
+          <span>{{localize "TTE.Spell.SchoolLabel"}}</span>
+          <select name="system.school" {{#unless editable}}disabled{{/unless}}>{{selectOptions spellSchoolOptions selected=system.school localize=true}}</select>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Spell.ActionLabel"}}</span>
+          <select name="system.action" {{#unless editable}}disabled{{/unless}}>{{selectOptions spellActionOptions selected=system.action localize=true}}</select>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Spell.Range"}}</span>
+          <input type="text" name="system.range" value="{{system.range}}" {{#unless editable}}disabled{{/unless}}>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Spell.Duration"}}</span>
+          <input type="text" name="system.duration" value="{{system.duration}}" {{#unless editable}}disabled{{/unless}}>
+        </label>
+      </div>
+      <div class="tte-prop-set">
+        <span class="tte-prop-set-label">{{localize "TTE.Spell.Classes"}}</span>
+        <div class="tte-chips">
+          {{#each spellClasses}}
+          <button type="button" class="tte-chip {{#if active}}active{{/if}}" data-action="toggleClassName" data-value="{{name}}">{{name}}</button>
+          {{/each}}
+        </div>
+      </div>
+      {{#if (eq system.action "reaction")}}
+      <label class="tte-field tte-field-wide">
+        <span>{{localize "TTE.Spell.Trigger"}}</span>
+        <input type="text" name="system.trigger" value="{{system.trigger}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+      {{/if}}
+      <div class="tte-prop-grid">
+        <label class="tte-prop"><input type="checkbox" name="system.concentration" {{checked system.concentration}} {{#unless editable}}disabled{{/unless}}><span>{{localize "TTE.Condition.concentrating"}}</span></label>
+        <label class="tte-prop" data-tooltip="{{localize 'TTE.Spell.VerbalHint'}}"><input type="checkbox" name="system.components.verbal" {{checked system.components.verbal}} {{#unless editable}}disabled{{/unless}}><span>{{localize "TTE.Spell.Verbal"}}</span></label>
+        <label class="tte-prop" data-tooltip="{{localize 'TTE.Spell.SomaticHint'}}"><input type="checkbox" name="system.components.somatic" {{checked system.components.somatic}} {{#unless editable}}disabled{{/unless}}><span>{{localize "TTE.Spell.Somatic"}}</span></label>
+      </div>
+    </section>
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-dice-d20"></i> {{localize "TTE.Spell.RollLabel"}}</h3>
+      <div class="tte-item-grid">
+        <label class="tte-field">
+          <span>{{localize "TTE.Spell.RollType"}}</span>
+          <select name="system.roll.type" {{#unless editable}}disabled{{/unless}}>{{selectOptions spellRollOptions selected=system.roll.type localize=true}}</select>
+        </label>
+        <label class="tte-field" data-tooltip="{{localize 'TTE.Spell.CategoryHint'}}">
+          <span>{{localize "TTE.Spell.Category"}}</span>
+          <select name="system.roll.category" {{#unless editable}}disabled{{/unless}}>{{selectOptions spellCategoryOptions selected=system.roll.category localize=true}}</select>
+        </label>
+        {{#if system.roll.category}}
+        <div class="tte-field">
+          <span>{{localize "TTE.Spell.Dice"}}</span>
+          <span class="tte-field-value">{{spellDice}}</span>
+        </div>
+        {{else}}
+        <label class="tte-field" data-tooltip="{{localize 'TTE.Spell.FormulaHint'}}">
+          <span>{{localize "TTE.Spell.Formula"}}</span>
+          <input type="text" name="system.roll.formula" value="{{system.roll.formula}}" placeholder="d8 > d10 > d12 > 3d4" {{#unless editable}}disabled{{/unless}}>
+        </label>
+        {{/if}}
+        <label class="tte-field">
+          <span>{{localize "TTE.DamageTypeLabel"}}</span>
+          <select name="system.roll.damageType" {{#unless editable}}disabled{{/unless}}>{{selectOptions spellDamageOptions selected=system.roll.damageType localize=true}}</select>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Spell.TestAttribute"}}</span>
+          <select name="system.roll.attribute" {{#unless editable}}disabled{{/unless}}>{{selectOptions conjuringOptions selected=system.roll.attribute localize=true}}</select>
+        </label>
+      </div>
+    </section>
+    {{/if}}{{/if}}
+
+    {{#if isEquipment}}{{#if editMode}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-sliders"></i> {{localize "TTE.Item.Details"}}</h3>
+      <div class="tte-item-grid">
+        <label class="tte-field">
+          <span>{{localize "TTE.Item.Category"}}</span>
+          <select name="system.category" {{#unless editable}}disabled{{/unless}}>
+            {{selectOptions gearCategoryOptions selected=system.category localize=true}}
+          </select>
+        </label>
+        {{#if isPotion}}
+        <label class="tte-field">
+          <span>{{localize "TTE.Potion.Kind"}}</span>
+          <select name="system.potion.kind" {{#unless editable}}disabled{{/unless}}>
+            {{selectOptions potionKindOptions selected=system.potion.kind localize=true}}
+          </select>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Potion.Potency"}}</span>
+          <select name="system.potion.potency" {{#unless editable}}disabled{{/unless}}>
+            {{selectOptions damageCategoryOptions selected=system.potion.potency localize=true}}
+          </select>
+        </label>
+        {{/if}}
+      </div>
+    </section>
+    {{/if}}{{/if}}
+
+    {{#if isWeapon}}{{#if editMode}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-khanda"></i> {{localize "TTE.Item.Details"}}</h3>
+      <div class="tte-item-grid">
+        <label class="tte-field">
+          <span>{{localize "TTE.Weapon.Group"}}</span>
+          <select data-custom-path="{{weaponGroup.path}}">
+            {{#each weaponGroup.options}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+          </select>
+        </label>
+        {{#if weaponGroup.custom}}
+        <label class="tte-field">
+          <span>{{localize "TTE.Item.Custom"}}</span>
+          <input type="text" name="system.group" value="{{system.group}}">
+        </label>
+        {{/if}}
+        <label class="tte-field">
+          <span>{{localize "TTE.Weapon.Attribute"}}</span>
+          <select name="system.attribute" {{#unless editable}}disabled{{/unless}}>
+            {{selectOptions attributeOptions selected=system.attribute localize=true}}
+          </select>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Weapon.Damage"}}</span>
+          <select name="system.damage.category">
+            {{selectOptions weaponDamageOptions selected=system.damage.category localize=true}}
+          </select>
+        </label>
+        {{#if weaponDice}}
+        <label class="tte-field" data-tooltip="{{localize 'TTE.Spell.CustomFormulaHint'}}">
+          <span>{{localize "TTE.Weapon.Formula"}}</span>
+          <input type="text" name="system.damage.formula" value="{{system.damage.formula}}" placeholder="d6 > d8 > d10 > d12">
+        </label>
+        {{/if}}
+        <label class="tte-field">
+          <span>{{localize "TTE.Weapon.DamageType"}}</span>
+          <select name="system.damage.type" {{#unless editable}}disabled{{/unless}}>
+            {{selectOptions damageTypeOptions selected=system.damage.type localize=true}}
+          </select>
+        </label>
+      </div>
+    </section>
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-list-check"></i> {{localize "TTE.Item.Properties"}}</h3>
+      <div class="tte-prop-grid">
+        {{#each weaponProperties}}
+        <label class="tte-prop" data-tooltip="{{hint}}">
+          {{#if isFlag}}
+          <input type="checkbox" name="{{name}}" {{checked value}} {{#unless @root.editable}}disabled{{/unless}}>
+          <span>{{label}}</span>
+          {{else}}
+          <span>{{label}}</span>
+          {{#if isNumber}}
+          <input type="number" name="{{name}}" value="{{value}}" min="0" {{#unless @root.editable}}disabled{{/unless}}>
+          {{/if}}
+          {{#if isText}}
+          <input type="text" name="{{name}}" value="{{value}}" placeholder="{{placeholder}}" {{#unless @root.editable}}disabled{{/unless}}>
+          {{/if}}
+          {{#if isAttribute}}
+          <select name="{{name}}" {{#unless @root.editable}}disabled{{/unless}}>
+            {{selectOptions @root.flexibleOptions selected=value localize=true}}
+          </select>
+          {{/if}}
+          {{/if}}
+        </label>
+        {{/each}}
+      </div>
+    </section>
+    {{/if}}{{/if}}
+
+    {{#if isArmor}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-shield-halved"></i> {{localize "TTE.Item.Details"}}</h3>
+      {{#if editMode}}
+      <div class="tte-item-grid">
+        <label class="tte-field">
+          <span>{{localize "TTE.Item.Category"}}</span>
+          <select name="system.category">{{selectOptions armorCategoryOptions selected=system.category localize=true}}</select>
+        </label>
+        {{#if isShield}}
+        <label class="tte-field">
+          <span>{{localize "TTE.Armor.ShieldBonus"}}</span>
+          <input type="number" name="system.shieldBonus" value="{{system.shieldBonus}}" min="0">
+        </label>
+        {{/if}}
+      </div>
+      {{else}}
+      <dl class="tte-summary-rows">
+        <div><dt>{{localize "TTE.Item.Category"}}</dt><dd>{{localize (lookup armorCategoryOptions system.category)}}</dd></div>
+        {{#if isShield}}<div><dt>{{localize "TTE.Armor.ShieldBonus"}}</dt><dd>+{{system.shieldBonus}}</dd></div>{{/if}}
+        {{#if armorDefense}}<div><dt>{{localize "TTE.Defense"}}</dt><dd>{{armorDefense}}</dd></div>{{/if}}
+      </dl>
+      {{/if}}
+    </section>
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-list-check"></i> {{localize "TTE.Item.Properties"}}</h3>
+      {{#if editMode}}
+      <div class="tte-prop-grid">
+        {{#each armorProperties}}{{#if isFlag}}
+        <label class="tte-prop" data-tooltip="{{hint}}">
+          <input type="checkbox" name="{{name}}" {{checked value}}>
+          <span>{{label}}</span>
+        </label>
+        {{/if}}{{/each}}
+      </div>
+      {{#each armorProperties}}{{#unless isFlag}}
+      <div class="tte-prop-set">
+        <span class="tte-prop-set-label" data-tooltip="{{hint}}">{{label}}</span>
+        <div class="tte-chips">
+          {{#each options}}
+          <button type="button" class="tte-chip {{#if active}}active{{/if}}" data-action="toggleSetValue"
+                  data-key="{{../key}}" data-value="{{key}}">{{label}}</button>
+          {{/each}}
+        </div>
+      </div>
+      {{/unless}}{{/each}}
+      {{else}}
+      {{#if armorActive.none}}
+      <p class="tte-hint">{{localize "TTE.Item.NoProperties"}}</p>
+      {{else}}
+      <div class="tte-chips">
+        {{#each armorActive.flags}}<span class="tte-chip active" data-tooltip="{{hint}}">{{label}}</span>{{/each}}
+        {{#each armorActive.sets}}{{#each values}}<span class="tte-chip active" data-tooltip="{{../hint}}">{{../label}} ({{this}})</span>{{/each}}{{/each}}
+      </div>
+      {{/if}}
+      {{/if}}
+    </section>
+    {{/if}}
+
+    {{#if isContainer}}
+    <section class="tte-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-box-open"></i> {{localize "TTE.Item.Details"}}</h3>
+      {{#if editMode}}
+      <div class="tte-item-grid">
+        <label class="tte-field">
+          <span>{{localize "TTE.Container.Capacity"}}</span>
+          <input type="number" name="system.capacity.value" value="{{system.capacity.value}}" min="0" step="any">
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Container.CapacityType"}}</span>
+          <select name="system.capacity.type">{{selectOptions capacityTypeOptions selected=system.capacity.type localize=true}}</select>
+        </label>
+        <label class="tte-field">
+          <span>{{localize "TTE.Container.LoadBonus"}}</span>
+          <input type="number" name="system.loadBonus" value="{{system.loadBonus}}" min="0">
+        </label>
+      </div>
+      <div class="tte-prop-grid">
+        <label class="tte-prop" data-tooltip="{{localize 'TTE.Container.WeightlessHint'}}">
+          <input type="checkbox" name="system.weightless" {{checked system.weightless}}>
+          <span>{{localize "TTE.Container.Weightless"}}</span>
+        </label>
+      </div>
+      {{else}}
+      <dl class="tte-summary-rows">
+        <div><dt>{{localize "TTE.Container.Capacity"}}</dt><dd>{{containerInfo.capacity}}</dd></div>
+        {{#if system.loadBonus}}<div><dt>{{localize "TTE.Container.LoadBonus"}}</dt><dd>+{{system.loadBonus}}</dd></div>{{/if}}
+      </dl>
+      {{#if system.weightless}}<div class="tte-chips"><span class="tte-chip active" data-tooltip="{{localize 'TTE.Container.WeightlessHint'}}">{{localize "TTE.Container.Weightless"}}</span></div>{{/if}}
+      {{/if}}
+      <div class="tte-prop-grid">
+        <label class="tte-prop" data-tooltip="{{localize 'TTE.Container.CarriedHint'}}">
+          <input type="checkbox" name="system.carried" {{checked system.carried}} {{#unless editable}}disabled{{/unless}}>
+          <span>{{localize "TTE.Container.Carried"}}</span>
+        </label>
+      </div>
+    </section>
+    {{/if}}
+
+    <section class="tte-panel tte-editor-panel">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-align-left"></i> {{localize "TTE.Description"}}</h3>
+      {{#if editable}}
+      <prose-mirror name="system.description" value="{{source.description}}" document-uuid="{{item.uuid}}"></prose-mirror>
+      {{else}}
+      <div class="editor"><div class="editor-content">{{{enrichedDescription}}}</div></div>
+      {{/if}}
+    </section>
+  </div>
+</div>

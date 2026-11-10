@@ -1,0 +1,66 @@
+<section class="tte-encounter-body">
+  <header class="tte-encounter-setup">
+    <label>{{localize "TTE.Encounter.Characters"}}
+      <select data-enc="characters">
+        {{#each characterOptions}}<option value="{{n}}" {{#if selected}}selected{{/if}}>{{n}}</option>{{/each}}
+      </select>
+    </label>
+    <label>{{localize "TTE.Encounter.GroupLevel"}}
+      <select data-enc="groupLevel">
+        {{#each groupLevels}}<option value="{{n}}" {{#if selected}}selected{{/if}}>{{n}}</option>{{/each}}
+      </select>
+    </label>
+    <button type="button" data-action="encParty" data-tooltip="{{localize "TTE.Encounter.PartyHint"}}">
+      <i class="fa-solid fa-users"></i> {{localize "TTE.Encounter.Party"}}
+    </button>
+  </header>
+
+  <div class="tte-encounter-budget">
+    {{#each budgets}}
+    <div class="tte-encounter-step {{#if active}}active{{/if}} step-{{key}}">
+      <span class="label">{{label}}</span>
+      <span class="value">{{points}}</span>
+    </div>
+    {{/each}}
+  </div>
+
+  <ol class="tte-encounter-rows">
+    {{#each rows}}
+    <li class="tte-encounter-row" data-key="{{key}}">
+      <img src="{{img}}" alt="" data-action="encOpen" data-tooltip="{{localize "TTE.Encounter.Open"}}">
+      <div class="tte-encounter-info">
+        <a class="name" data-action="encOpen">{{name}}</a>
+        <span class="detail">{{detail}}</span>
+      </div>
+      <select data-enc="level" data-tooltip="{{localize "TTE.Level"}}">
+        {{#each levels}}<option value="{{n}}" {{#if selected}}selected{{/if}}>{{n}}</option>{{/each}}
+      </select>
+      <select data-enc="role">
+        {{#each roles}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+      <div class="tte-encounter-qty">
+        <a data-action="encLess"><i class="fa-solid fa-minus"></i></a>
+        <span>{{qty}}</span>
+        <a data-action="encMore"><i class="fa-solid fa-plus"></i></a>
+      </div>
+      <span class="tte-encounter-points" data-tooltip="{{localize "TTE.Encounter.Each"}}">{{points}} × {{qty}} = <strong>{{total}}</strong></span>
+      <a class="tte-encounter-remove" data-action="encRemove" data-tooltip="{{localize "TTE.Encounter.Remove"}}"><i class="fa-solid fa-xmark"></i></a>
+    </li>
+    {{/each}}
+    <li class="tte-encounter-drop"><i class="fa-solid fa-hand-pointer"></i> {{localize "TTE.Encounter.Drop"}}</li>
+  </ol>
+
+  <footer class="tte-encounter-footer">
+    <div class="tte-encounter-total step-{{difficulty}}">
+      <span>{{localize "TTE.Encounter.Total"}}: <strong>{{total}}</strong> {{localize "TTE.Encounter.Points"}}</span>
+      <span class="difficulty">{{difficultyLabel}}</span>
+      <span>{{localize "TTE.Encounter.XP"}}: <strong>{{xp}}</strong></span>
+    </div>
+    <div class="tte-encounter-buttons">
+      <button type="button" data-action="encClear"><i class="fa-solid fa-trash"></i> {{localize "TTE.Encounter.Clear"}}</button>
+      <button type="button" data-action="encCreate" data-tooltip="{{localize "TTE.Encounter.CreateHint"}}" {{#unless rows.length}}disabled{{/unless}}>
+        <i class="fa-solid fa-users-rectangle"></i> {{localize "TTE.Encounter.Create"}}
+      </button>
+    </div>
+  </footer>
+</section>

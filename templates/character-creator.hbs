@@ -1,0 +1,232 @@
+<div class="tte-root tte-creator-root">
+
+  {{!-- Steps --}}
+  <nav class="tte-creator-steps">
+    {{#each steps}}
+    <a class="tte-creator-step {{#if active}}is-active{{/if}} {{#if done}}is-done{{/if}}" data-action="step" data-step="{{key}}"
+       {{#if problem}}data-tooltip="{{problem}}"{{/if}}>
+      <span class="tte-creator-step-n">{{#if done}}<i class="fa-solid fa-check"></i>{{else}}{{number}}{{/if}}</span>
+      <span>{{label}}</span>
+    </a>
+    {{/each}}
+  </nav>
+
+  <section class="tte-creator-body">
+
+    {{!-- Race --}}
+    {{#if (eq step "race")}}
+    <p class="tte-creator-intro">{{localize "TTE.Creator.Intro.Race"}}</p>
+    <div class="tte-creator-cards">
+      {{#each races}}
+      <article class="tte-creator-card {{#if selected}}is-selected{{/if}}" data-action="pick" data-type="race" data-id="{{id}}">
+        <header>
+          <img src="{{img}}" alt="">
+          <div>
+            <h3>{{name}}</h3>
+            <span class="tte-creator-meta">{{summary}}</span>
+          </div>
+          {{#if selected}}<i class="fa-solid fa-circle-check tte-creator-check"></i>{{/if}}
+        </header>
+        <ul>
+          {{#each features}}<li><strong>{{name}}.</strong> {{text}}</li>{{/each}}
+        </ul>
+      </article>
+      {{else}}
+      <p class="tte-empty">{{localize "TTE.Creator.NoPack"}}</p>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{!-- Class --}}
+    {{#if (eq step "class")}}
+    <p class="tte-creator-intro">{{localize "TTE.Creator.Intro.Class"}}</p>
+    <div class="tte-creator-cards">
+      {{#each classes}}
+      <article class="tte-creator-card is-class {{#if selected}}is-selected{{/if}}" data-action="pick" data-type="class" data-id="{{id}}">
+        <header>
+          <img src="{{img}}" alt="">
+          <div>
+            <h3>{{name}}</h3>
+            <span class="tte-creator-meta">{{summary}}</span>
+          </div>
+          {{#if selected}}<i class="fa-solid fa-circle-check tte-creator-check"></i>{{/if}}
+        </header>
+        {{#if blurb}}<p class="tte-creator-blurb">{{blurb}}</p>{{/if}}
+        <div class="tte-creator-chips">
+          {{#each chips}}<span class="tte-creator-feature-chip" data-tooltip="{{text}}">{{name}} <small>{{level}}</small></span>{{/each}}
+        </div>
+      </article>
+      {{else}}
+      <p class="tte-empty">{{localize "TTE.Creator.NoPack"}}</p>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{!-- Attributes --}}
+    {{#if (eq step "attributes")}}
+    <p class="tte-creator-intro">{{localize "TTE.Creator.Intro.Attributes"}}</p>
+    <div class="tte-creator-pool">
+      <span class="tte-mini-label">{{localize "TTE.Creator.Remaining"}}</span>
+      {{#each remaining}}<span class="tte-creator-chip">{{this}}</span>{{else}}<span class="tte-creator-ok"><i class="fa-solid fa-check"></i> {{localize "TTE.Creator.AllUsed"}}</span>{{/each}}
+      <button type="button" class="tte-button tte-button-ghost" data-action="clearAttributes"><i class="fa-solid fa-rotate-left"></i> {{localize "TTE.Creator.Clear"}}</button>
+    </div>
+    <div class="tte-creator-attributes">
+      {{#each attributes}}
+      <label class="tte-creator-attribute">
+        <div>
+          <strong>{{label}}</strong>
+          <span>{{hint}}</span>
+        </div>
+        <select data-attribute="{{key}}">
+          <option value="">—</option>
+          {{#each options}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+        </select>
+      </label>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{!-- Skills --}}
+    {{#if (eq step "skills")}}
+    <p class="tte-creator-intro">{{localize "TTE.Creator.Intro.Skills"}}</p>
+    <div class="tte-creator-pool">
+      <span class="tte-mini-label">{{localize "TTE.Creator.Chosen"}}</span>
+      <span class="tte-creator-chip {{#if (eq skillChosen skillCount)}}is-full{{/if}}">{{skillChosen}} / {{skillCount}}</span>
+      {{#if raceSkills}}<span class="tte-creator-meta">{{localize "TTE.Creator.RaceSkills"}}</span>{{/if}}
+    </div>
+    <div class="tte-creator-checks">
+      {{#each skills}}
+      <a class="tte-creator-check-item {{#if checked}}is-checked{{/if}} {{#if disabled}}is-disabled{{/if}}" data-action="toggle"
+         data-list="skills" data-key="{{key}}">
+        <i class="fa-{{#if checked}}solid fa-square-check{{else}}regular fa-square{{/if}}"></i>
+        <div>
+          <strong>{{label}}</strong>
+          <span>{{hint}}</span>
+        </div>
+      </a>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{!-- Techniques (Warrior) --}}
+    {{#if (eq step "techniques")}}
+    <p class="tte-creator-intro">{{localize "TTE.Creator.Intro.Techniques"}}</p>
+    <div class="tte-creator-pool">
+      <span class="tte-mini-label">{{localize "TTE.Creator.Chosen"}}</span>
+      <span class="tte-creator-chip {{#if (eq techniqueChosen techniqueCount)}}is-full{{/if}}">{{techniqueChosen}} / {{techniqueCount}}</span>
+    </div>
+    <div class="tte-creator-checks is-wide">
+      {{#each techniques}}
+      <a class="tte-creator-check-item {{#if checked}}is-checked{{/if}} {{#if disabled}}is-disabled{{/if}}" data-action="toggle"
+         data-list="techniques" data-key="{{key}}">
+        <i class="fa-{{#if checked}}solid fa-square-check{{else}}regular fa-square{{/if}}"></i>
+        <div>
+          <strong>{{label}}</strong>
+          <span>{{hint}}</span>
+        </div>
+      </a>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{!-- Spells --}}
+    {{#if (eq step "spells")}}
+    <p class="tte-creator-intro">{{localize "TTE.Creator.Intro.Spells"}}</p>
+    <div class="tte-creator-pool">
+      <span class="tte-mini-label">{{localize "TTE.Creator.Chosen"}}</span>
+      <span class="tte-creator-chip {{#if (eq spellChosen spellCount)}}is-full{{/if}}">{{spellChosen}} / {{spellCount}}</span>
+    </div>
+    <div class="tte-creator-checks is-wide">
+      {{#each spells}}
+      <a class="tte-creator-check-item {{#if checked}}is-checked{{/if}} {{#if disabled}}is-disabled{{/if}}" data-action="toggle"
+         data-list="spells" data-key="{{id}}">
+        <i class="fa-{{#if checked}}solid fa-square-check{{else}}regular fa-square{{/if}}"></i>
+        <div>
+          <strong>{{name}}</strong> <span class="tte-creator-meta">{{meta}}</span>
+          <span>{{text}}</span>
+        </div>
+      </a>
+      {{else}}
+      <p class="tte-empty">{{localize "TTE.Creator.NoSpells"}}</p>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{!-- Equipment --}}
+    {{#if (eq step "equipment")}}
+    <p class="tte-creator-intro">{{localize "TTE.Creator.Intro.Equipment"}}</p>
+    <div class="tte-panel tte-creator-gear">
+      <h3 class="tte-panel-title">{{localize "TTE.Creator.YouGet"}}</h3>
+      <ul>
+        {{#each fixed}}<li><i class="fa-solid fa-check"></i> {{this}}</li>{{/each}}
+        <li><i class="fa-solid fa-coins"></i> {{currency}} {{localize "TTE.Currency"}} <span class="tte-creator-meta">({{localize "TTE.Creator.RolledAtEnd"}})</span></li>
+      </ul>
+      {{#each choices}}
+      <h3 class="tte-panel-title">{{localize "TTE.Creator.ChooseOne"}}</h3>
+      <div class="tte-creator-options">
+        {{#each options}}
+        <a class="tte-creator-option {{#if selected}}is-selected{{/if}}" data-action="option" data-group="{{../index}}" data-option="{{index}}">
+          <i class="fa-{{#if selected}}solid fa-circle-dot{{else}}regular fa-circle{{/if}}"></i> {{label}}
+        </a>
+        {{/each}}
+      </div>
+      {{/each}}
+      {{#if weapons.length}}
+      <h3 class="tte-panel-title">{{localize "TTE.Creator.WeaponsOfChoice"}}</h3>
+      <div class="tte-creator-weapons">
+        {{#each weapons}}
+        <select data-weapon="{{index}}">
+          <option value="">—</option>
+          {{#each options}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+        </select>
+        {{/each}}
+      </div>
+      {{/if}}
+      <p class="tte-creator-meta tte-creator-note">{{localize "TTE.Creator.KitNote"}}</p>
+    </div>
+    {{/if}}
+
+    {{!-- Review --}}
+    {{#if (eq step "review")}}
+    <label class="tte-creator-name">
+      <span class="tte-mini-label">{{localize "Name"}}</span>
+      <input type="text" name="name" value="{{picks.name}}">
+    </label>
+    <div class="tte-panel tte-creator-review">
+      <dl>
+        <dt>{{localize "TYPES.Item.race"}}</dt><dd>{{#if raceItem}}{{raceItem.name}}{{else}}—{{/if}}</dd>
+        <dt>{{localize "TTE.ClassLabel"}}</dt><dd>{{#if classItem}}{{classItem.name}}{{else}}—{{/if}}</dd>
+        <dt>{{localize "TTE.Life"}}</dt><dd>{{#if review.life}}{{review.life}}{{else}}—{{/if}}</dd>
+        {{#if review.mana}}<dt>{{localize "TTE.Mana"}}</dt><dd>{{review.mana}}</dd>{{/if}}
+        <dt>{{localize "TTE.Attributes"}}</dt>
+        <dd class="tte-creator-attr-row">{{#each review.attributes}}<span><small>{{label}}</small> {{value}}</span>{{/each}}</dd>
+        <dt>{{localize "TTE.Skills"}}</dt><dd>{{#if review.skills}}{{review.skills}}{{else}}—{{/if}}</dd>
+        {{#if techniqueCount}}<dt>{{localize "TTE.Creator.Step.Techniques"}}</dt><dd>{{#if review.techniques}}{{review.techniques}}{{else}}—{{/if}}</dd>{{/if}}
+        {{#if spellCount}}<dt>{{localize "TTE.Tab.spells"}}</dt><dd>{{#if review.spells}}{{review.spells}}{{else}}—{{/if}}</dd>{{/if}}
+      </dl>
+    </div>
+    {{#if problems.length}}
+    <ul class="tte-creator-problems">
+      {{#each problems}}<li><i class="fa-solid fa-triangle-exclamation"></i> {{this}}</li>{{/each}}
+    </ul>
+    {{else}}
+    <p class="tte-creator-ready"><i class="fa-solid fa-circle-check"></i> {{localize "TTE.Creator.Ready"}}</p>
+    {{/if}}
+    {{#if replaces}}<p class="tte-creator-meta tte-creator-note"><i class="fa-solid fa-circle-info"></i> {{localize "TTE.Creator.ReplaceNote"}}</p>{{/if}}
+    {{/if}}
+  </section>
+
+  <footer class="tte-creator-footer">
+    {{#if problem}}<span class="tte-creator-problem"><i class="fa-solid fa-circle-info"></i> {{problem}}</span>{{else}}<span></span>{{/if}}
+    <div>
+      {{#unless first}}<button type="button" class="tte-button tte-button-ghost" data-action="back"><i class="fa-solid fa-arrow-left"></i> {{localize "TTE.Creator.Back"}}</button>{{/unless}}
+      {{#if last}}
+      <button type="button" class="tte-button" data-action="finish" {{#unless ready}}disabled{{/unless}}>
+        <i class="fa-solid fa-hat-wizard"></i> {{localize "TTE.Creator.Finish"}}
+      </button>
+      {{else}}
+      <button type="button" class="tte-button" data-action="next">{{localize "TTE.Creator.Next"}} <i class="fa-solid fa-arrow-right"></i></button>
+      {{/if}}
+    </div>
+  </footer>
+</div>

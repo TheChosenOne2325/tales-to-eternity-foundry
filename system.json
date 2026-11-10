@@ -1,0 +1,173 @@
+{
+  "id": "tales-to-eternity",
+  "title": "Tales To Eternity",
+  "description": "The Tales To Eternity tabletop RPG system for Foundry Virtual Tabletop.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "14"
+  },
+  "authors": [
+    {
+      "name": "Victor"
+    }
+  ],
+  "esmodules": [
+    "tte.mjs"
+  ],
+  "styles": [
+    "styles/tte.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "character": {
+        "htmlFields": [
+          "biography"
+        ]
+      },
+      "npc": {
+        "htmlFields": [
+          "biography"
+        ]
+      }
+    },
+    "Item": {
+      "feature": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "equipment": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "weapon": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "armor": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "container": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "race": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "class": {
+        "htmlFields": [
+          "description",
+          "startingEquipment"
+        ]
+      },
+      "specialization": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "spell": {
+        "htmlFields": [
+          "description"
+        ]
+      }
+    }
+  },
+  "primaryTokenAttribute": "life",
+  "socket": false,
+  "flags": {
+    "tales-to-eternity": {
+      "sourceBooks": {
+        "FTC": "Fragments Of The Cosmos",
+        "ROC": "Rupture Of The Cosmos"
+      }
+    }
+  },
+  "grid": {
+    "type": 1,
+    "distance": 1.5,
+    "units": "m"
+  },
+  "packs": [
+    {
+      "name": "races",
+      "label": "Races",
+      "type": "Item",
+      "path": "packs/races",
+      "system": "tales-to-eternity",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "classes",
+      "label": "Classes",
+      "type": "Item",
+      "path": "packs/classes",
+      "system": "tales-to-eternity",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "spells",
+      "label": "Spells",
+      "type": "Item",
+      "path": "packs/spells",
+      "system": "tales-to-eternity",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "items",
+      "label": "Items",
+      "type": "Item",
+      "path": "packs/items",
+      "system": "tales-to-eternity",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "monsters",
+      "label": "Monsters",
+      "type": "Actor",
+      "path": "packs/monsters",
+      "system": "tales-to-eternity",
+      "ownership": {
+        "PLAYER": "NONE",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "monster-abilities",
+      "label": "Monster Abilities",
+      "type": "Item",
+      "path": "packs/monster-abilities",
+      "system": "tales-to-eternity",
+      "ownership": {
+        "PLAYER": "NONE",
+        "ASSISTANT": "OWNER"
+      }
+    }
+  ]
+}

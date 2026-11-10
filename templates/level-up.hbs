@@ -1,0 +1,85 @@
+<div class="tte-root tte-creator-root">
+  <section class="tte-creator-body">
+
+    <div class="tte-panel tte-levelup-summary">
+      <h3 class="tte-panel-title"><i class="fa-solid fa-arrow-up"></i> {{localize "TTE.Level"}} {{from}} → {{to}}</h3>
+      <div class="tte-levelup-stats">
+        <span><small>{{localize "TTE.Life"}}</small> <strong>{{life}}</strong></span>
+        {{#if mana}}<span><small>{{localize "TTE.Mana"}}</small> <strong>{{mana}}</strong></span>{{/if}}
+        <span><small>{{localize "TTE.Tier"}}</small> <strong>{{tier}}</strong></span>
+      </div>
+      {{#if gained.length}}
+      <ul class="tte-levelup-features">
+        {{#each gained}}<li><strong>{{name}}</strong> <span class="tte-creator-meta">({{source}}, {{localize "TTE.Level"}} {{level}})</span> {{text}}</li>{{/each}}
+      </ul>
+      {{/if}}
+      <p class="tte-creator-meta">{{localize "TTE.LevelUp.Automatic"}}</p>
+    </div>
+
+    {{#each sections}}
+    <h3 class="tte-levelup-title">{{title}}</h3>
+    {{#if specs}}
+    <div class="tte-creator-cards">
+      {{#each specs}}
+      <article class="tte-creator-card is-class {{#if selected}}is-selected{{/if}}" data-action="pickSpec" data-id="{{id}}">
+        <header>
+          <img src="{{img}}" alt="">
+          <div><h3>{{name}}</h3></div>
+          {{#if selected}}<i class="fa-solid fa-circle-check tte-creator-check"></i>{{/if}}
+        </header>
+        <ul>{{#each features}}<li><strong>{{name}}.</strong> {{text}}</li>{{/each}}</ul>
+      </article>
+      {{/each}}
+    </div>
+    {{/if}}
+    {{#if techniques}}
+    <div class="tte-creator-checks is-wide">
+      {{#each techniques}}
+      <a class="tte-creator-check-item {{#if checked}}is-checked{{/if}}" data-action="pickTechnique" data-level="{{level}}" data-key="{{id}}">
+        <i class="fa-{{#if checked}}solid fa-circle-dot{{else}}regular fa-circle{{/if}}"></i>
+        <div><strong>{{name}}</strong> <span>{{text}}</span></div>
+      </a>
+      {{/each}}
+    </div>
+    {{/if}}
+    {{#if attributes}}
+    <div class="tte-levelup-attributes">
+      {{#each attributes}}
+      <a class="tte-levelup-attribute {{#if checked}}is-checked{{/if}} {{#if disabled}}is-disabled{{/if}}"
+         data-action="toggleAttribute" data-level="{{level}}" data-key="{{key}}">
+        <span>{{label}}</span>
+        <strong>{{value}}</strong>
+      </a>
+      {{/each}}
+    </div>
+    {{/if}}
+    {{/each}}
+
+    {{#if spellCount}}
+    <h3 class="tte-levelup-title">{{localize "TTE.LevelUp.SpellsTitle"}} <span class="tte-creator-chip {{#if (eq spellChosen spellCount)}}is-full{{/if}}">{{spellChosen}} / {{spellCount}}</span></h3>
+    <div class="tte-creator-checks is-wide">
+      {{#each spells}}
+      <a class="tte-creator-check-item {{#if checked}}is-checked{{/if}} {{#if disabled}}is-disabled{{/if}}" data-action="toggleSpell" data-key="{{id}}">
+        <i class="fa-{{#if checked}}solid fa-square-check{{else}}regular fa-square{{/if}}"></i>
+        <div>
+          <strong>{{name}}</strong> <span class="tte-creator-meta">{{meta}}</span>
+          <span>{{text}}</span>
+        </div>
+      </a>
+      {{else}}
+      <p class="tte-empty">{{localize "TTE.Creator.NoSpells"}}</p>
+      {{/each}}
+    </div>
+    {{/if}}
+  </section>
+
+  <footer class="tte-creator-footer">
+    {{#if problems.length}}<span class="tte-creator-problem"><i class="fa-solid fa-circle-info"></i> {{problems.[0]}}</span>{{else}}<span></span>{{/if}}
+    <div>
+      <button type="button" class="tte-button tte-button-ghost" data-action="later">{{localize "TTE.LevelUp.Later"}}</button>
+      <button type="button" class="tte-button" data-action="apply" {{#unless ready}}disabled{{/unless}}>
+        <i class="fa-solid fa-check"></i> {{localize "TTE.LevelUp.Apply"}}
+      </button>
+    </div>
+  </footer>
+</div>
